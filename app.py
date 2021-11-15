@@ -1,5 +1,7 @@
 import sys
 
+import constants
+
 class App():
     """
     Base container class to divert all export
@@ -7,7 +9,7 @@ class App():
     their respective packages and 
     libraries.
     """
-    def __init__(self, expansion=None):
+    def __init__(self, expansion=None, filename=None):
         """
         Initialise the command line session, using
         the correct expansion type to convert
@@ -17,8 +19,15 @@ class App():
         Args:
             expansion (String): FamiTracker expansion chip to use as reference for parsing channel data. Defaults to None.
         """
+
+        """Ensure case-sensitivity doesn't get in the way of conversions."""
+        expansion = str.lower(expansion)
+
         if expansion is None:
             """Terminate execution if any invalid parameters are provided."""
+            sys.stdout.write('No expansion chip provided. Please reference the README for accepted formats. Terminating...\n')
+            sys.exit()
+        elif expansion not in constants.CONSTANTS.expansions():
             sys.stdout.write('Invalid expansion chip provided. Please reference the README for accepted formats. Terminating...\n')
             sys.exit()
 
@@ -26,4 +35,9 @@ class App():
 
 if '__main__' == __name__:
     """Initialise root app when file is executed via the command line."""
-    app = App()
+    if 2 < len(sys.argv):
+        app = App(sys.argv[1], sys.argv[2])
+    if 1 < len(sys.argv):
+        app = App(sys.argv[1])
+    else:
+        app = App()
