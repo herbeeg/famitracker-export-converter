@@ -18,24 +18,44 @@ class App():
         
         Args:
             expansion (String): FamiTracker expansion chip to use as reference for parsing channel data. Defaults to None.
+            filename (String): Name of local file to be housed in same directory as script execution. Defaults to None.
         """
+        self.expansion = expansion
+        self.filename = filename
 
-        if expansion is None:
-            """Terminate execution if any invalid parameters are provided."""
-            sys.stdout.write('No expansion chip provided. Please reference the README for accepted formats. Terminating...\n')
+        self.validateParameters()
+
+    def validateParameters(self):
+        """
+        Ensure that the information passed to the
+        parser by the user via the command line
+        is in the correct format.
+        """
+        if self.expansion is None:
+            """Terminate execution if no expansion chip is provided."""
+            sys.stdout.write('Please provide a valid expansion chip name for parsing. Terminating...\n')
             sys.exit()
-        elif str.lower(expansion) not in constants.expansions():
+        elif self.expansion.lower() not in constants.expansions():
             """Ensure case-sensitivity doesn't get in the way of conversions."""
             sys.stdout.write('Invalid expansion chip provided. Please reference the README for accepted formats. Terminating...\n')
             sys.exit()
 
+        if self.filename is None:
+            """Terminate execution if no filename is provided."""
+            sys.stdout.write('Please provide a valid .txt file for parsing. Terminating...\n')
+            sys.exit()
+        elif not self.filename.lower().endswith('.txt'):
+            """Ensure case-sensitivity doesn't get in the way of conversions."""
+            sys.stdout.write('Invalid filename provided. Please reference the README for accepted formats. Terminating...\n')
+            sys.exit()   
+        
         return
 
 if '__main__' == __name__:
     """Initialise root app when file is executed via the command line."""
     if 2 < len(sys.argv):
         app = App(sys.argv[1], sys.argv[2])
-    if 1 < len(sys.argv):
+    elif 1 < len(sys.argv):
         app = App(sys.argv[1])
     else:
         app = App()
