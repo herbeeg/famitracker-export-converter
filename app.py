@@ -1,6 +1,7 @@
 import sys
 
 import constants
+import parser.read as read
 
 class App():
     """
@@ -25,6 +26,10 @@ class App():
 
         self.validateParameters()
 
+        self.reader = read.FileReader(self.filename)
+        self.reader.start()
+        """Attempt to start reading the file if validation passes."""
+
     def validateParameters(self):
         """
         Ensure that the information passed to the
@@ -47,9 +52,7 @@ class App():
         elif not self.filename.lower().endswith('.txt'):
             """Ensure case-sensitivity doesn't get in the way of conversions."""
             sys.stdout.write('Invalid filename provided. Please reference the README for accepted formats. Terminating...\n')
-            sys.exit()   
-        
-        return
+            sys.exit()
 
 if '__main__' == __name__:
     """Initialise root app when file is executed via the command line."""
