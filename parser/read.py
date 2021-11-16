@@ -12,6 +12,10 @@ class FileReader:
                     self.state = 'headers'
 
                     for line in export_file:
+                        if '' == line:
+                            """Immediately move onto the next if the line is blank."""
+                            continue
+
                         if 'headers' == self.state:
                             if self.shouldChangeState(line):
                                 self.state = 'patterns'
@@ -43,6 +47,9 @@ class FileReader:
                 """Any uncaught errors should still result in the application closing."""
                 sys.stdout.write('Invalid file provided. Terminating...\n')
                 sys.exit()
+
+    def extractHeaders(self, next_line=''):
+        return ''
 
     def shouldChangeState(self, next_line=''):
         """
