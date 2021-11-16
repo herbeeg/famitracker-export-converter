@@ -20,14 +20,12 @@ class App():
             expansion (String): FamiTracker expansion chip to use as reference for parsing channel data. Defaults to None.
         """
 
-        """Ensure case-sensitivity doesn't get in the way of conversions."""
-        expansion = str.lower(expansion)
-
         if expansion is None:
             """Terminate execution if any invalid parameters are provided."""
             sys.stdout.write('No expansion chip provided. Please reference the README for accepted formats. Terminating...\n')
             sys.exit()
-        elif expansion not in constants.CONSTANTS.expansions():
+        elif str.lower(expansion) not in constants.expansions():
+            """Ensure case-sensitivity doesn't get in the way of conversions."""
             sys.stdout.write('Invalid expansion chip provided. Please reference the README for accepted formats. Terminating...\n')
             sys.exit()
 
