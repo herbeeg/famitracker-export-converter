@@ -27,11 +27,11 @@ class FileReader:
 
                                 continue
                             else:
-                                line_data = self.extractHeaders(temp_store, line)
+                                line_extract = self.extractHeaders(line)
 
-                                if line_data is not None:
+                                if line_extract is not None:
                                     """Only store temporary data if we require it for the export."""
-                                    temp_store.write(line_data)
+                                    temp_store.write(line_extract)
                                 
                         elif 'patterns' == self.state:
                             if self.shouldChangeState(line):
@@ -58,14 +58,10 @@ class FileReader:
                 sys.stdout.write('Invalid file provided. Terminating...\n')
                 sys.exit()
 
-    def extractHeaders(self, temp_store, next_line=''):
-        if next_line.startswith('TITLE'):
+    def extractHeaders(self, next_line=''):
+        if next_line.startswith(('TITLE', 'AUTHOR', 'COPYRIGHT')):
             parts = next_line.split('"')
             return parts[1]
-        elif next_line.startswith('AUTHOR'):
-            return
-        elif next_line.startswith('COPYRIGHT'):
-            return
         elif next_line.startswith('TRACK'):
             return
 
