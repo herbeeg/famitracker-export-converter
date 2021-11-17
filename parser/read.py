@@ -1,6 +1,6 @@
 import sys
 
-import store
+import parser.store as store
 
 class FileReader:
     def __init__(self, filename=None):
@@ -59,6 +59,16 @@ class FileReader:
                 sys.exit()
 
     def extractHeaders(self, temp_store, next_line=''):
+        if next_line.startswith('TITLE'):
+            parts = next_line.split('"')
+            return parts[1]
+        elif next_line.startswith('AUTHOR'):
+            return
+        elif next_line.startswith('COPYRIGHT'):
+            return
+        elif next_line.startswith('TRACK'):
+            return
+
         return None
 
     def shouldChangeState(self, next_line=''):
