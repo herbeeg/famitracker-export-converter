@@ -1,5 +1,7 @@
 import sys
 
+import store
+
 class FileReader:
     def __init__(self, filename=None):
         self.filename = filename
@@ -8,6 +10,9 @@ class FileReader:
     def start(self):
         if self.filename:
             try:
+                temp_store = store.Temp()
+                """Open up a temporary file to write local information to."""
+
                 with open(self.filename, 'r') as export_file:
                     self.state = 'headers'
 
@@ -22,7 +27,12 @@ class FileReader:
 
                                 continue
                             else:
-                                continue
+                                line_data = self.extractHeaders(temp_store, line)
+
+                                if line_data is not None:
+                                    """Only store temporary data if we require it for the export."""
+                                    temp_store.write(line_data)
+                                
                         elif 'patterns' == self.state:
                             if self.shouldChangeState(line):
                                 self.state = 'rows'
@@ -48,8 +58,8 @@ class FileReader:
                 sys.stdout.write('Invalid file provided. Terminating...\n')
                 sys.exit()
 
-    def extractHeaders(self, next_line=''):
-        return ''
+    def extractHeaders(self, temp_store, next_line=''):
+        return None
 
     def shouldChangeState(self, next_line=''):
         """
@@ -64,7 +74,7 @@ class FileReader:
         Returns:
             boolean: True if we want to switch state, otherwise False
         """
-        if next_line.startswith(('COLUMNS', 'PATTERN 00', '#End of export')):
+        if next_line.startswith(('COLUMNS', 'PATTERN 00', '# End of export')):
             return True
 
         return False
