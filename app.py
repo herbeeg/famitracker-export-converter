@@ -3,7 +3,7 @@ import sys
 import constants
 import parser.read as read
 
-class App():
+class App:
     """
     Base container class to divert all export
     file conversions and error handling to
