@@ -1,14 +1,14 @@
-import os
 import tempfile
+
+from os import path
+
+from utils import getRootPath
 
 class Temp:
     def __init__(self):
-        self.temp_file = tempfile.NamedTemporaryFile(delete=False, dir=os.path.join(self.getCurrentPath(), ''))
-        print(self.temp_file.name)
+        self.temp_dir = path.join(getRootPath(), '') + 'tmp/'
+        self.temp_file = tempfile.NamedTemporaryFile(delete=False, dir=self.temp_dir)
     
     def write(self, data=''):
         if data.strip():
             self.temp_file.write(data.encode())
-
-    def getCurrentPath(self):
-        return os.path.dirname(os.path.realpath(__file__))
