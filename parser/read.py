@@ -57,6 +57,12 @@ class FileReader:
                 """Any uncaught errors should still result in the application closing."""
                 sys.stdout.write('Invalid file provided. Terminating...\n')
                 sys.exit()
+            finally:
+                if 'eof' != self.state:
+                    """Remove the temporary file that we created if the eof endings were never reached."""
+                    temp_store.remove()
+                else:
+                    temp_store.close()
 
     def extractHeaders(self, next_line=''):
         if next_line.startswith(('TITLE', 'AUTHOR', 'COPYRIGHT')):

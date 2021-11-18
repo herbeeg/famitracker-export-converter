@@ -1,6 +1,6 @@
 import tempfile
 
-from os import path
+from os import path, unlink
 
 from utils import getRootPath
 
@@ -41,3 +41,20 @@ class Temp:
 
             self.hex_count = self.hex_count + 1
             """Ensure each identifier stays unique for direct list reference later on."""
+
+    def close(self):
+        """
+        Gracefully close the temporary file so
+        we can reference the object later
+        for the export process.
+        """
+        self.temp_file.close()
+
+    def remove(self):
+        """
+        Manually delete the temporary file that was
+        created, since the automatic deletion
+        after closure was disabled.
+        """
+        self.close()
+        unlink(self.temp_file.name)
