@@ -22,35 +22,30 @@ class FileReader:
                             """Immediately move onto the next if the line is blank."""
                             continue
 
-                        if 'headers' == self.state:
-                            if self.shouldChangeState(line):
+                        if self.shouldChangeState(line):
+                            if 'headers' == self.state:
                                 self.state = 'patterns'
-
                                 continue
-                            else:
-                                line_extract = self.extractHeaders(line)
-
-                                if line_extract is not None:
-                                    """Only store temporary data if we require it for the export."""
-                                    for item in line_extract:
-                                        temp_store.write(item)
-                                
-                        elif 'patterns' == self.state:
-                            if self.shouldChangeState(line):
+                            elif 'patterns' == self.state:
                                 self.state = 'rows'
-
                                 continue
-                            else:
-                                continue
-                        elif 'rows' == self.state:
-                            if self.shouldChangeState(line):
+                            elif 'rows' == self.state:
                                 self.state = 'eof'
+                                continue
+                            elif 'eof' == self.state:
+                                break
+                        else:
+                            if 'headers' == self.state:
+                                line_extract = self.extractHeaders(line)
+                            elif 'patterns' == self.state:
+                                line_extract = self.extractPatterns(line)
+                            elif 'rows' == self.state:
+                                line_extract = self.extractRows(line)
 
-                                continue
-                            else:
-                                continue
-                        elif 'eof' == self.state:
-                            break
+                            if line_extract is not None:
+                                """Only store temporary data if we require it for the export."""
+                                for item in line_extract:
+                                    temp_store.write(item)
             except OSError as ex:
                 """Terminate if an invalid path has been provided."""
                 sys.stdout.write(ex.strerror + '\n')
@@ -81,6 +76,16 @@ class FileReader:
 
             return [parts[1], parts[2], parts[3]]
 
+        return None
+
+    def extractPatterns(self, next_line=''):
+        if next_line.startswith('ORDER'):
+            parts = next_line.split(':')
+            print(parts)
+
+        return None
+
+    def extractRows(self, next_line=''):
         return None
 
     def shouldChangeState(self, next_line=''):
