@@ -7,3 +7,8 @@ def expansions():
         'vrc7',
         'n163'
     }
+
+def globalExpansions():
+    return [
+        '2a03'
+    ]

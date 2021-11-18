@@ -1,5 +1,6 @@
 import sys
 
+import constants
 import parser.store as store
 
 class FileReader:
@@ -67,7 +68,13 @@ class FileReader:
     def extractHeaders(self, next_line=''):
         if next_line.startswith(('TITLE', 'AUTHOR', 'COPYRIGHT')):
             parts = next_line.split('"')
+
             return parts[1]
+        elif next_line.startswith('EXPANSION'):
+            parts = next_line.split(' ')
+            last = int(parts[-1].rstrip('\n'))
+
+            return constants.globalExpansions()[last]
         elif next_line.startswith('TRACK'):
             return
 
