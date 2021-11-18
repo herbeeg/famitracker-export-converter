@@ -32,7 +32,8 @@ class FileReader:
 
                                 if line_extract is not None:
                                     """Only store temporary data if we require it for the export."""
-                                    temp_store.write(line_extract)
+                                    for item in line_extract:
+                                        temp_store.write(item)
                                 
                         elif 'patterns' == self.state:
                             if self.shouldChangeState(line):
@@ -56,7 +57,7 @@ class FileReader:
                 sys.exit()
             except Exception as ex:
                 """Any uncaught errors should still result in the application closing."""
-                sys.stdout.write('Invalid file provided. Terminating...\n')
+                sys.stdout.write('Error encountered during file reading. Terminating...\n')
                 sys.exit()
             finally:
                 if 'eof' != self.state:
@@ -69,14 +70,16 @@ class FileReader:
         if next_line.startswith(('TITLE', 'AUTHOR', 'COPYRIGHT')):
             parts = next_line.split('"')
 
-            return parts[1]
+            return [parts[1]]
         elif next_line.startswith('EXPANSION'):
             parts = next_line.split(' ')
             last = int(parts[-1].rstrip('\n'))
 
-            return constants.globalExpansions()[last]
+            return [constants.globalExpansions()[last]]
         elif next_line.startswith('TRACK'):
-            return
+            parts = ' '.join(next_line.split()).split(' ')
+
+            return [parts[1], parts[2], parts[3]]
 
         return None
 
