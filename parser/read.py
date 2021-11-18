@@ -81,7 +81,10 @@ class FileReader:
     def extractPatterns(self, next_line=''):
         if next_line.startswith('ORDER'):
             parts = next_line.split(':')
-            print(parts)
+            pattern_numbers = parts[1].rstrip('\n')
+            combined = pattern_numbers.replace(' ', '')
+
+            return [combined]
 
         return None
 
