@@ -1,7 +1,9 @@
 import sys
+import time
 
 import constants
 import parser.read as read
+import parser.export as export
 
 class App:
     """
@@ -29,6 +31,9 @@ class App:
         self.reader = read.FileReader(self.filename)
         self.reader.start()
         """Attempt to start reading the file if validation passes."""
+
+        timestamp = time.time()
+        self.exporter = export.DataExporter(timestamp)
 
     def validateParameters(self):
         """
