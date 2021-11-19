@@ -121,6 +121,14 @@ class FileReader:
         Returns:
             list: Items to be appended to the temporary store, otherwise []
         """
+        if next_line.startswith('ROW'):
+            parts = next_line.split(':')
+            parts.pop(0)
+            channel_data = [channel.rstrip('\n') for channel in parts]
+            channel_data = [channel.replace(' ', '') for channel in channel_data]
+            
+            return channel_data
+
         return []
 
     def shouldChangeState(self, next_line=''):
