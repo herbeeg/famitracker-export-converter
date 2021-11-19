@@ -41,11 +41,10 @@ class FileReader:
                                 line_extract = self.extractPatterns(line)
                             elif 'rows' == self.state:
                                 line_extract = self.extractRows(line)
-
-                            if line_extract is not None:
+                            
+                            for item in line_extract:
                                 """Only store temporary data if we require it for the export."""
-                                for item in line_extract:
-                                    temp_store.write(item)
+                                temp_store.write(item)
             except OSError as ex:
                 """Terminate if an invalid path has been provided."""
                 sys.stdout.write(ex.strerror + '\n')
@@ -76,7 +75,7 @@ class FileReader:
 
             return [parts[1], parts[2], parts[3]]
 
-        return None
+        return []
 
     def extractPatterns(self, next_line=''):
         if next_line.startswith('ORDER'):
@@ -86,10 +85,10 @@ class FileReader:
 
             return [combined]
 
-        return None
+        return []
 
     def extractRows(self, next_line=''):
-        return None
+        return []
 
     def shouldChangeState(self, next_line=''):
         """
