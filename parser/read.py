@@ -61,6 +61,17 @@ class FileReader:
                     temp_store.close()
 
     def extractHeaders(self, next_line=''):
+        """
+        Yield the data that will eventually be
+        stored in the JSON configuration
+        file as settings information.
+
+        Args:
+            next_line (String): The next line in the .txt file to read. Defaults to ''.
+        
+        Returns:
+            list: Items to be appended to the temporary store, otherwise []
+        """
         if next_line.startswith(('TITLE', 'AUTHOR', 'COPYRIGHT')):
             parts = next_line.split('"')
 
@@ -78,6 +89,17 @@ class FileReader:
         return []
 
     def extractPatterns(self, next_line=''):
+        """
+        Yield the realtime pattern data that will 
+        be displayed above each column of 
+        notes during playback.
+
+        Args:
+            next_line (String): The next line in the .txt file to read. Defaults to ''.
+        
+        Returns:
+            list: Items to be appended to the temporary store, otherwise []
+        """
         if next_line.startswith('ORDER'):
             parts = next_line.split(':')
             pattern_numbers = parts[1].rstrip('\n')
@@ -88,6 +110,17 @@ class FileReader:
         return []
 
     def extractRows(self, next_line=''):
+        """
+        Yield the individual note data for each column 
+        that will be displayed and modified in real 
+        time for each tick of audio playback.
+
+        Args:
+            next_line (String): The next line in the .txt file to read. Defaults to ''.
+        
+        Returns:
+            list: Items to be appended to the temporary store, otherwise []
+        """
         return []
 
     def shouldChangeState(self, next_line=''):
