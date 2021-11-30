@@ -75,6 +75,22 @@ class DataExporter:
                     config['song']['frames'] = temp_file.readline().replace('0x4', '').strip()
                     config['song']['speed'] = temp_file.readline().replace('0x5', '').strip()
                     config['song']['bpm'] = temp_file.readline().replace('0x6', '').strip()
+
+                    config['frames'] = []
+
+                    isFrame = True
+                    """Manual validation required to check if we're still processing frame information."""
+
+                    while isFrame:
+                        next_line = temp_file.readline()
+                        next_line = next_line[4:].strip()
+
+                        if next_line.isalnum():
+                            k = 2
+                            config['frames'].append([next_line[i:i+k] for i in range(0, len(next_line), k)])
+                        else:
+                            isFrame = False
+
             except OSError as ex:
                 """Terminate if an invalid temporary path has been provided."""
                 sys.stdout.write(ex.strerror + '\n')
