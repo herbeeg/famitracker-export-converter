@@ -5,13 +5,14 @@ from os import path
 from utils import getRootPath
 
 class DataExporter:
-    def __init__(self, timestamp=0):
+    def __init__(self, timestamp=0, temp=None):
         if 0 < timestamp:
             self.filenames = [
                 path.join(getRootPath(), '') + 'exp/' + 'ft2vis_json_{time}.json'.format(time=timestamp),
                 path.join(getRootPath(), '') + 'exp/' + 'ft2vis_csv_{time}.csv'.format(time=timestamp)
             ]
 
+        self.tempfile = temp
         self.state = 'init'
 
     def start(self):

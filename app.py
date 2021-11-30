@@ -29,12 +29,12 @@ class App:
         self.validateParameters()
 
         self.reader = read.FileReader(self.filename)
-        self.reader.start()
+        full_path = self.reader.start()
         """Attempt to start reading the file if validation passes."""
 
         timestamp = int(time.time())
         """Remove decimal places created by time.time() floating point precision for clean filenames."""
-        self.exporter = export.DataExporter(timestamp)
+        self.exporter = export.DataExporter(timestamp, full_path)
         self.exporter.start()
         """Attempt to start writing to JSON config and CSV data files."""
 

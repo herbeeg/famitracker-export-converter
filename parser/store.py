@@ -58,3 +58,6 @@ class Temp:
         """
         self.close()
         unlink(self.temp_file.name)
+
+    def getFullPath(self) -> str:
+        return self.temp_file.name

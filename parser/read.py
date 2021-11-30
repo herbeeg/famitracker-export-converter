@@ -60,6 +60,8 @@ class FileReader:
                 else:
                     temp_store.close()
 
+        return temp_store.getFullPath()
+
     def extractHeaders(self, next_line=''):
         """
         Yield the data that will eventually be
