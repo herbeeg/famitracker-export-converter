@@ -62,6 +62,7 @@ class DataExporter:
 
     def exportConfig(self):
         config = {}
+        saved_line = ''
 
         if self.tempfile:
             try:
@@ -82,12 +83,15 @@ class DataExporter:
                     """Manual validation required to check if we're still processing frame information."""
 
                     while isFrame:
-                        next_line = temp_file.readline()
+                        next_line, saved_line = temp_file.readline()
                         next_line = next_line[4:].strip()
 
                         if next_line.isalnum():
+                            """Non-alphanumeric characters will exist in the pattern data so safe assumption here."""
                             k = 2
                             config['frames'].append([next_line[i:i+k] for i in range(0, len(next_line), k)])
+                            """Frame pattern information comes in pairs so we can use list comprehension along with a range"""
+                            """to increment over each string section to append to the config file."""
                         else:
                             isFrame = False
 
@@ -104,7 +108,7 @@ class DataExporter:
         
         self.state = 'eof_json'
 
-        return json.dumps(config)
+        return (json.dumps(config), saved_line)
     
     def exportData(self):
         return None
