@@ -66,15 +66,15 @@ class DataExporter:
         if self.tempfile:
             try:
                 with open(self.tempfile, 'r') as temp_file:
-                    config['title'] = temp_file.readline()
-                    config['author'] = temp_file.readline()
-                    config['copyright'] = temp_file.readline()
-                    config['expansion'] = temp_file.readline()
+                    config['title'] = temp_file.readline().replace('0x0', '').strip()
+                    config['author'] = temp_file.readline().replace('0x1', '').strip()
+                    config['copyright'] = temp_file.readline().replace('0x2', '').strip()
+                    config['expansion'] = temp_file.readline().replace('0x3', '').strip()
                     
                     config['song'] = {}
-                    config['song']['frames'] = temp_file.readline()
-                    config['song']['speed'] = temp_file.readline()
-                    config['song']['bpm'] = temp_file.readline()
+                    config['song']['frames'] = temp_file.readline().replace('0x4', '').strip()
+                    config['song']['speed'] = temp_file.readline().replace('0x5', '').strip()
+                    config['song']['bpm'] = temp_file.readline().replace('0x6', '').strip()
             except OSError as ex:
                 """Terminate if an invalid temporary path has been provided."""
                 sys.stdout.write(ex.strerror + '\n')
