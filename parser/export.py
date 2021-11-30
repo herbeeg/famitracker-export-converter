@@ -1,3 +1,4 @@
+import json
 import sys
 
 from os import path
@@ -60,7 +61,34 @@ class DataExporter:
         sys.stdout.write('Succesfully wrote data to {path} in {size} bytes.\n'.format(path=self.filenames[1], size=path.getsize(self.filenames[1])))
 
     def exportConfig(self):
-        return None
+        config = {}
+
+        if self.tempfile:
+            try:
+                with open(self.tempfile, 'r') as temp_file:
+                    config['title'] = temp_file.readline()
+                    config['author'] = temp_file.readline()
+                    config['copyright'] = temp_file.readline()
+                    config['expansion'] = temp_file.readline()
+                    
+                    config['song'] = {}
+                    config['song']['frames'] = temp_file.readline()
+                    config['song']['speed'] = temp_file.readline()
+                    config['song']['bpm'] = temp_file.readline()
+            except OSError as ex:
+                """Terminate if an invalid temporary path has been provided."""
+                sys.stdout.write(ex.strerror + '\n')
+                sys.exit()
+            except Exception as ex:
+                """Any uncaught errors should still result in the application closing."""
+                sys.stdout.write('Error encountered during JSON export. Terminating...\n')
+                sys.exit()
+            finally:
+                temp_file.close()
+        
+        self.state = 'eof_json'
+
+        return json.dumps(config)
     
     def exportData(self):
         return None
