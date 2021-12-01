@@ -37,7 +37,8 @@ class DataExporter:
             try:
                 with open(self.filenames[0], 'w+') as json_file:
                     file_contents = self.exportConfig()
-                    json_file.write(file_contents)
+                    json_file.write(file_contents[0])
+                    """Reference first element of tuple."""
                     json_file.close()
             except TypeError as ex:
                 """We expect a str to be passed for writing."""
@@ -108,7 +109,8 @@ class DataExporter:
                     """Manual validation required to check if we're still processing frame information."""
 
                     while isFrame:
-                        next_line, saved_line = temp_file.readline()
+                        next_line = saved_line = temp_file.readline()
+                        """Assign same value to a variable so that no data is lost when we move onto detailed pattern information."""
                         next_line = next_line[4:].strip()
                         """This will strip the encoding and any whitespace if the encoding only covers three characters."""
 
