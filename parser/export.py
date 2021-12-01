@@ -6,7 +6,23 @@ from os import path
 from utils import getRootPath
 
 class DataExporter:
+    """
+    Handles the full conversion of our temporary
+    encoded FamiTracker export data and split
+    into two separate files for config and
+    raw pattern information.
+    """
     def __init__(self, timestamp=0, temp=None):
+        """
+        Store the full directory paths that we
+        will write the config and data to as
+        well as initialising the exporter
+        state to begin writing.
+
+        Args:
+            timestamp (int): Unique file identifier based on when execution began. Defaults to 0.
+            temp (str): Full path to the temporary storage for reference. Defaults to None.
+        """
         if 0 < timestamp:
             self.filenames = [
                 path.join(getRootPath(), '') + 'exp/' + 'ft2vis_json_{time}.json'.format(time=timestamp),
@@ -61,6 +77,14 @@ class DataExporter:
         sys.stdout.write('Succesfully wrote data to {path} in {size} bytes.\n'.format(path=self.filenames[1], size=path.getsize(self.filenames[1])))
 
     def exportConfig(self):
+        """
+        Build a dictionary of configurations to
+        be handled, encode them as a JSON
+        object and export.
+
+        Returns:
+            tuple: JSON data we want to write to the config and the next line of data, as a pair.
+        """
         config = {}
         saved_line = ''
 
@@ -78,6 +102,7 @@ class DataExporter:
                     config['song']['bpm'] = temp_file.readline().replace('0x6', '').strip()
 
                     config['frames'] = []
+                    """There is a lot of variance in the amount of frames a song can have so a list is far more flexible to add to."""
 
                     isFrame = True
                     """Manual validation required to check if we're still processing frame information."""
@@ -85,6 +110,7 @@ class DataExporter:
                     while isFrame:
                         next_line, saved_line = temp_file.readline()
                         next_line = next_line[4:].strip()
+                        """This will strip the encoding and any whitespace if the encoding only covers three characters."""
 
                         if next_line.isalnum():
                             """Non-alphanumeric characters will exist in the pattern data so safe assumption here."""
@@ -107,8 +133,9 @@ class DataExporter:
                 temp_file.close()
         
         self.state = 'eof_json'
+        """Keep track of the application status."""
 
         return (json.dumps(config), saved_line)
     
     def exportData(self):
-        return None
+        return ()
