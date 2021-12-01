@@ -34,7 +34,7 @@ class App:
 
         timestamp = int(time.time())
         """Remove decimal places created by time.time() floating point precision for clean filenames."""
-        self.exporter = export.DataExporter(timestamp, full_path)
+        self.exporter = export.DataExporter(timestamp, full_path, self.expansion)
         self.exporter.start()
         """Attempt to start writing to JSON config and CSV data files."""
 

@@ -1,8 +1,10 @@
+import csv
 import json
 import sys
 
 from os import path
 
+import constants
 from utils import getRootPath
 
 class DataExporter:
@@ -12,7 +14,7 @@ class DataExporter:
     into two separate files for config and
     raw pattern information.
     """
-    def __init__(self, timestamp=0, temp=None):
+    def __init__(self, timestamp=0, temp=None, expansion=None):
         """
         Store the full directory paths that we
         will write the config and data to as
@@ -30,9 +32,13 @@ class DataExporter:
             ]
 
         self.tempfile = temp
+        self.chip = expansion
+
         self.state = 'init'
 
     def start(self):
+        first_pattern = ''
+
         if self.filenames[0]:
             try:
                 with open(self.filenames[0], 'w+') as json_file:
@@ -40,6 +46,8 @@ class DataExporter:
                     json_file.write(file_contents[0])
                     """Reference first element of tuple."""
                     json_file.close()
+
+                    first_pattern = file_contents[1]
             except TypeError as ex:
                 """We expect a str to be passed for writing."""
                 sys.stdout.write('{error}: Attempted to write invalid data type.\n'.format(error=str(type(ex))))
@@ -56,9 +64,12 @@ class DataExporter:
 
         if self.filenames[1]:
             try:
-                with open(self.filenames[1], 'w+') as csv_file:
-                    file_contents = self.exportData()
-                    csv_file.write(file_contents)
+                with open(self.filenames[1], 'w+', newline='', encoding='utf-8') as csv_file:
+                    file_contents = self.exportData(first_pattern)
+
+                    writer = csv.writer(csv_file)
+                    writer.writerows(file_contents)
+
                     csv_file.close()
             except TypeError as ex:
                 """We expect a str to be passed for writing."""
@@ -139,5 +150,41 @@ class DataExporter:
 
         return (json.dumps(config), saved_line)
     
-    def exportData(self):
-        return ()
+    def exportData(self, first=''):
+        pattern_data = []
+
+        if self.tempfile:
+            try:
+                with open(self.tempfile, 'r') as temp_file:
+                    next_line = temp_file.readline()
+
+                    while first != next_line:
+                        next_line = temp_file.readline()
+
+                    headers = constants.columns(self.chip)
+
+                    if not headers:
+                        """Terminate if the expansion chip is still invalid for whatever reason."""
+                        sys.stdout.write('Passed expansion chip is invalid. Terminating...\n')
+                        sys.exit()
+
+                    pattern_data.append(headers[1])
+                    column_no = headers[0]
+                        
+                    while next_line:
+                        next_line = temp_file.readline()
+            except OSError as ex:
+                """Terminate if an invalid temporary path has been provided."""
+                sys.stdout.write(ex.strerror + '\n')
+                sys.exit()
+            except Exception as ex:
+                """Any uncaught errors should still result in the application closing."""
+                sys.stdout.write('Error encountered during JSON export. Terminating...\n')
+                sys.exit()
+            finally:
+                temp_file.close()
+
+        self.state = 'eof'
+        """Final application state."""
+
+        return pattern_data
