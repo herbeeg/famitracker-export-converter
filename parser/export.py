@@ -88,7 +88,7 @@ class DataExporter:
         sys.stdout.write('Succesfully wrote config to {path} in {size} bytes.\n'.format(path=self.filenames[0], size=path.getsize(self.filenames[0])))
         sys.stdout.write('Succesfully wrote data to {path} in {size} bytes.\n'.format(path=self.filenames[1], size=path.getsize(self.filenames[1])))
 
-    def exportConfig(self):
+    def exportConfig(self) -> tuple:
         """
         Build a dictionary of configurations to
         be handled, encode them as a JSON
@@ -150,7 +150,7 @@ class DataExporter:
 
         return (json.dumps(config), saved_line)
     
-    def exportData(self, first=''):
+    def exportData(self, first='') -> list:
         pattern_data = []
 
         if self.tempfile:
@@ -169,17 +169,32 @@ class DataExporter:
                         sys.exit()
 
                     pattern_data.append(headers[1])
-                    column_no = headers[0]
+
+                    column_increment = int(headers[0])
+                    line_number = 0
+                    pattern_buffer = []
                         
                     while next_line:
                         next_line = temp_file.readline()
+
+                        if 0 == line_number:
+                            pattern_buffer.append(self.decodePattern(first))
+                        else:      
+                            if 0 == line_number % column_increment:
+                                pattern_data.append(pattern_buffer)
+                                pattern_buffer.clear()
+                                """Empty the buffer contents after writing for reuse instead of creating a new object."""
+                                
+                                pattern_buffer.append(self.decodePattern(next_line))
+
+                        line_number = line_number + 1
             except OSError as ex:
                 """Terminate if an invalid temporary path has been provided."""
                 sys.stdout.write(ex.strerror + '\n')
                 sys.exit()
             except Exception as ex:
                 """Any uncaught errors should still result in the application closing."""
-                sys.stdout.write('Error encountered during JSON export. Terminating...\n')
+                sys.stdout.write('Error encountered during CSV export. Terminating...\n')
                 sys.exit()
             finally:
                 temp_file.close()
@@ -188,3 +203,15 @@ class DataExporter:
         """Final application state."""
 
         return pattern_data
+
+    def decodePattern(self, raw_line='') -> dict:
+        decoded = ''
+
+        try:
+            pattern = raw_line.split(' ')[1].strip()
+            decoded = pattern[:3]
+        except IndexError as ex:
+            """Catch EoF endings and reset any decoded data before the file is closed."""
+            decoded = ''
+
+        return decoded
