@@ -185,8 +185,8 @@ class DataExporter:
                                 pattern_buffer.clear()
                                 """Empty the buffer contents after writing for reuse instead of creating a new object."""
                                 
-                                pattern_buffer.append(self.decodePattern(next_line))
-
+                            pattern_buffer.append(self.decodePattern(next_line))
+                        
                         line_number = line_number + 1
             except OSError as ex:
                 """Terminate if an invalid temporary path has been provided."""
@@ -210,6 +210,15 @@ class DataExporter:
         try:
             pattern = raw_line.split(' ')[1].strip()
             decoded = pattern[:3]
+
+            decoded = decoded.replace('---', 'NOP')
+            """Run the triple dash replacement before the single dash to easily avoid any unwarranted conversions."""
+            decoded = decoded.replace('-', 'n')
+            """Regular notes."""
+            decoded = decoded.replace('#', 'h')
+            """Sharp notes."""
+            decoded = decoded.replace('...', '')
+            """Save space by removing any pattern data that holds no information."""
         except IndexError as ex:
             """Catch EoF endings and reset any decoded data before the file is closed."""
             decoded = ''
