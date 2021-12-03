@@ -182,8 +182,9 @@ class DataExporter:
                         else:      
                             if 0 == line_number % column_increment:
                                 pattern_data.append(pattern_buffer)
-                                pattern_buffer.clear()
-                                """Empty the buffer contents after writing for reuse instead of creating a new object."""
+                                
+                                pattern_buffer = []
+                                """Assign a new list object rather than emptying the buffer contents as existing data was being overwritten."""
                                 
                             pattern_buffer.append(self.decodePattern(next_line))
                         
