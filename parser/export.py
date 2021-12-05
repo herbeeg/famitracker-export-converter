@@ -37,6 +37,11 @@ class DataExporter:
         self.state = 'init'
 
     def start(self):
+        """
+        Handle the opening, writing and cleaning up of
+        the JSON config and CSV data exports for 
+        users to input into the visualiser.
+        """
         first_pattern = ''
 
         if self.filenames[0]:
@@ -69,6 +74,7 @@ class DataExporter:
 
                     writer = csv.writer(csv_file)
                     writer.writerows(file_contents)
+                    """csv Python library allows us to write valid CSV data cleanly in a similar manner to other formats."""
 
                     csv_file.close()
             except TypeError as ex:
@@ -151,6 +157,18 @@ class DataExporter:
         return (json.dumps(config), saved_line)
     
     def exportData(self, first='') -> list:
+        """
+        Structure the pattern data into lists that 
+        represent columns in a CSV file so they
+        can be written cleanly in one sweep 
+        during the export process.
+
+        Args:
+            first (str): The first line of the pattern data that gets collected before validation begins. Defaults to ''.
+
+        Returns:
+            list: Combined pattern data that will be exported as a CSV.
+        """
         pattern_data = []
 
         if self.tempfile:
@@ -159,6 +177,7 @@ class DataExporter:
                     next_line = temp_file.readline()
 
                     while first != next_line:
+                        """Re-reading existing config lines that have already been parsed."""
                         next_line = temp_file.readline()
 
                     headers = constants.columns(self.chip)
@@ -178,10 +197,12 @@ class DataExporter:
                         next_line = temp_file.readline()
 
                         if 0 == line_number:
+                            """We've already got the first line of data so we use that and immediately move onto the next line."""
                             pattern_buffer.append(self.decodePattern(first))
                         else:      
                             if 0 == line_number % column_increment:
                                 pattern_data.append(pattern_buffer)
+                                """Store what's in the buffer once we're ready for the next line."""
                                 
                                 pattern_buffer = []
                                 """Assign a new list object rather than emptying the buffer contents as existing data was being overwritten."""
@@ -205,12 +226,25 @@ class DataExporter:
 
         return pattern_data
 
-    def decodePattern(self, raw_line='') -> dict:
+    def decodePattern(self, raw_line='') -> str:
+        """
+        Extract the note information from the
+        compressed channel data and run it
+        past validation and replacement
+        checks for consistency.
+
+        Args:
+            raw_line (str): The line in its base form to decode. Defaults to ''.
+
+        Returns:
+            str: Decoded note data, otherwise empty string.
+        """
         decoded = ''
 
         try:
             pattern = raw_line.split(' ')[1].strip()
             decoded = pattern[:3]
+            """Note data consists of three alphanumeric and special characters."""
 
             decoded = decoded.replace('---', 'NOP')
             """Run the triple dash replacement before the single dash to easily avoid any unwarranted conversions."""
