@@ -4,11 +4,34 @@ import constants
 import parser.store as store
 
 class FileReader:
+    """
+    Convert the provided FamiTracker export file
+    into compressed encoded data for use when 
+    splitting and exporting into separate 
+    config and data files.
+    """
     def __init__(self, filename=None):
+        """
+        Store the path of the text file we
+        want to convert and prepare the 
+        reader for execution.
+
+        Args:
+            filename (str): Relative path to the FamiTracker export file. Defaults to None.
+        """
         self.filename = filename
         self.state = 'init'
 
-    def start(self):
+    def start(self) -> str:
+        """
+        Read, encode and store the FamiTracker
+        song information and pattern data in
+        a compressed format that will be 
+        used during the export phase.
+
+        Returns:
+            str: Full absolute path to the temporary file if encoding was successful
+        """
         if self.filename:
             try:
                 temp_store = store.Temp()
@@ -62,14 +85,14 @@ class FileReader:
 
         return temp_store.getFullPath()
 
-    def extractHeaders(self, next_line=''):
+    def extractHeaders(self, next_line='') -> list:
         """
         Yield the data that will eventually be
         stored in the JSON configuration
         file as settings information.
 
         Args:
-            next_line (String): The next line in the .txt file to read. Defaults to ''.
+            next_line (str): The next line in the .txt file to read. Defaults to ''.
         
         Returns:
             list: Items to be appended to the temporary store, otherwise []
@@ -90,14 +113,14 @@ class FileReader:
 
         return []
 
-    def extractPatterns(self, next_line=''):
+    def extractPatterns(self, next_line='') -> list:
         """
         Yield the realtime pattern data that will 
         be displayed above each column of 
         notes during playback.
 
         Args:
-            next_line (String): The next line in the .txt file to read. Defaults to ''.
+            next_line (str): The next line in the .txt file to read. Defaults to ''.
         
         Returns:
             list: Items to be appended to the temporary store, otherwise []
@@ -111,14 +134,14 @@ class FileReader:
 
         return []
 
-    def extractRows(self, next_line=''):
+    def extractRows(self, next_line='') -> list:
         """
         Yield the individual note data for each column 
         that will be displayed and modified in real 
         time for each tick of audio playback.
 
         Args:
-            next_line (String): The next line in the .txt file to read. Defaults to ''.
+            next_line (str): The next line in the .txt file to read. Defaults to ''.
         
         Returns:
             list: Items to be appended to the temporary store, otherwise []
@@ -133,7 +156,7 @@ class FileReader:
 
         return []
 
-    def shouldChangeState(self, next_line=''):
+    def shouldChangeState(self, next_line='') -> bool:
         """
         Define what part of the FamiTracker export
         file we are currently reading to allow
@@ -141,10 +164,10 @@ class FileReader:
         to be called.
         
         Args:
-            next_line (String): The next line in the .txt file to read. Defaults to ''.
+            next_line (str): The next line in the .txt file to read. Defaults to ''.
 
         Returns:
-            boolean: True if we want to switch state, otherwise False
+            bool: True if we want to switch state, otherwise False
         """
         if next_line.startswith(('COLUMNS', 'PATTERN 00', '# End of export')):
             return True

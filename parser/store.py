@@ -60,4 +60,12 @@ class Temp:
         unlink(self.temp_file.name)
 
     def getFullPath(self) -> str:
+        """
+        Retain the whereabouts of the temp file that 
+        was generated so it can be referenced by 
+        the exporter when required.
+
+        Returns:
+            str: Full temp filepath
+        """
         return self.temp_file.name
