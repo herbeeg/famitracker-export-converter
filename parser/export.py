@@ -194,12 +194,12 @@ class DataExporter:
                     pattern_buffer = []
                         
                     while next_line:
-                        next_line = temp_file.readline()
-
                         if 0 == line_number:
                             """We've already got the first line of data so we use that and immediately move onto the next line."""
                             pattern_buffer.append(self.decodePattern(first))
-                        else:      
+                        else:
+                            next_line = temp_file.readline()
+
                             if 0 == line_number % column_increment:
                                 pattern_data.append(pattern_buffer)
                                 """Store what's in the buffer once we're ready for the next line."""
