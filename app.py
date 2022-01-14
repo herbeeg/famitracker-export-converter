@@ -2,8 +2,9 @@ import sys
 import time
 
 import constants
-import parser.read as read
+import parser.correct as correct
 import parser.export as export
+import parser.read as read
 
 class App:
     """
@@ -27,6 +28,9 @@ class App:
         self.filename = filename
 
         self.validateParameters()
+
+        correct.FixExport(self.filename)
+        """Rewrite FamiTracker export file as there are existing problems that mask required data."""
 
         self.reader = read.FileReader(self.filename)
         full_path = self.reader.start()
